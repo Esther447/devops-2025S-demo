@@ -11,7 +11,7 @@ jobs:
   code:
     name: Code scan (Bandit)
     runs-on: ubuntu-latest
-    continue-on-error: true        # warn for now; Drill 5 sets the threshold
+    continue-on-error: true        # policy: warn only — current findings are Low severity (B105); blocking deferred until High/Medium findings appear
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -43,8 +43,8 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: campus-notifier:dev
-          severity: HIGH,CRITICAL
-          exit-code: "0"            # warn for now; Drill 5 flips this
+          severity: CRITICAL
+          exit-code: "1"            # policy: CRITICAL with a fix published blocks the build
           format: table
 
   iac:
@@ -58,4 +58,4 @@ jobs:
           directory: .
           framework: terraform
           quiet: true
-          soft_fail: true           # warn for now; Drill 5 flips this to false
+          soft_fail: false          # policy: IaC that opens internet exposure blocks the build; accepted-risk findings suppressed in source
